@@ -41,22 +41,31 @@ else()
   set(BOOST_REQUIRED_VERSION 1.74)
 endif()
 
+# Nastavení cesty k Boost
+if(NOT DEFINED ENV{BOOST_ROOT} AND NOT DEFINED Boost_DIR AND NOT DEFINED BOOST_ROOT AND NOT DEFINED BOOSTROOT)
+  message(FATAL_ERROR "No BOOST_ROOT environment variable could be found! Please make sure it is set and the points to your Boost installation.")
+else()
+  if(DEFINED ENV{BOOST_ROOT})
+    set(CMAKE_PREFIX_PATH $ENV{BOOST_ROOT})
+  elseif(DEFINED BOOST_ROOT)
+    set(CMAKE_PREFIX_PATH ${BOOST_ROOT})
+  endif()
+endif()
+
+# Explicitně přidat cestu k Boost
+list(APPEND CMAKE_PREFIX_PATH "C:/local/boost_1_86_0")
+
 find_package(Boost ${BOOST_REQUIRED_VERSION}
   REQUIRED
-  COMPONENTS 
+  COMPONENTS
     system
     filesystem
     program_options
     regex
-    locale
-  CONFIG
-  HINTS
-    ${BOOST_SEARCH_HINTS})
+    locale)
 
 if(NOT Boost_FOUND)
-  if(NOT DEFINED ENV{BOOST_ROOT} AND NOT DEFINED Boost_DIR AND NOT DEFINED BOOST_ROOT AND NOT DEFINED BOOSTROOT)
-    message(FATAL_ERROR "No BOOST_ROOT environment variable could be found! Please make sure it is set and the points to your Boost installation.")
-  endif()
+  message(FATAL_ERROR "Could not find Boost")
 endif()
 
 add_library(boost INTERFACE)
